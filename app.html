@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro y Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .form-container {
+            max-width: 500px;
+            margin: auto;
+            background-color: #fff;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            margin-top: 0.25rem;
+            margin-bottom: 1rem;
+        }
+        .form-button {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: #4f46e5;
+            color: #fff;
+            font-weight: 700;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s;
+        }
+        .form-button:hover {
+            background-color: #4338ca;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen">
+    <div class="form-container">
+        <div id="message-box" class="hidden p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg"></div>
+        
+        <!-- Registration Form -->
+        <div id="registration-section">
+            <h1 class="text-2xl font-bold mb-6 text-center">Registro de Usuario</h1>
+            <form id="registration-form" class="space-y-4">
+                <div>
+                    <label for="firstname" class="block text-sm font-medium text-gray-700">Nombre</label>
+                    <input type="text" id="firstname" name="firstname" class="form-input" required>
+                </div>
+                <div>
+                    <label for="lastname" class="block text-sm font-medium text-gray-700">Apellido</label>
+                    <input type="text" id="lastname" name="lastname" class="form-input" required>
+                </div>
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                    <input type="email" id="email" name="email" class="form-input" required>
+                </div>
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700">Contraseña</label>
+                    <input type="password" id="password" name="password" class="form-input" required>
+                </div>
+                <button type="submit" class="form-button">Registrar</button>
+            </form>
+            <p class="mt-4 text-center text-sm">
+                ¿Ya tienes una cuenta? 
+                <a href="#" onclick="showLogin()" class="font-medium text-indigo-600 hover:text-indigo-500">Inicia sesión aquí</a>
+            </p>
+        </div>
+
+        <!-- Login Form -->
+        <div id="login-section" class="hidden">
+            <h1 class="text-2xl font-bold mb-6 text-center">Inicio de Sesión</h1>
+            <form id="login-form" class="space-y-4">
+                <div>
+                    <label for="login-email" class="block text-sm font-medium text-gray-700">Email</label>
+                    <input type="email" id="login-email" name="login-email" class="form-input" required>
+                </div>
+                <div>
+                    <label for="login-password" class="block text-sm font-medium text-gray-700">Contraseña</label>
+                    <input type="password" id="login-password" name="login-password" class="form-input" required>
+                </div>
+                <button type="submit" class="form-button">Iniciar Sesión</button>
+            </form>
+            <p class="mt-4 text-center text-sm">
+                ¿No tienes una cuenta? 
+                <a href="#" onclick="showRegistration()" class="font-medium text-indigo-600 hover:text-indigo-500">Regístrate aquí</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        const registrationSection = document.getElementById('registration-section');
+        const loginSection = document.getElementById('login-section');
+        const registrationForm = document.getElementById('registration-form');
+        const loginForm = document.getElementById('login-form');
+        const messageBox = document.getElementById('message-box');
+
+        let registeredUsers = [];
+
+        function showMessage(message, isSuccess = true) {
+            messageBox.textContent = message;
+            messageBox.className = isSuccess
+                ? "p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg"
+                : "p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg";
+            messageBox.classList.remove('hidden');
+        }
+
+        function showRegistration() {
+            registrationSection.classList.remove('hidden');
+            loginSection.classList.add('hidden');
+            messageBox.classList.add('hidden');
+        }
+
+        function showLogin() {
+            registrationSection.classList.add('hidden');
+            loginSection.classList.remove('hidden');
+            messageBox.classList.add('hidden');
+        }
+
+        registrationForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const firstname = event.target.elements['firstname'].value;
+            const lastname = event.target.elements['lastname'].value;
+            const email = event.target.elements['email'].value;
+            const password = event.target.elements['password'].value;
+            
+            // Validation logic
+            if (!firstname || !lastname || !email || !password) {
+                showMessage("Todos los campos son obligatorios.", false);
+                return;
+            }
+
+            if (!/\S+@\S+\.\S+/.test(email)) {
+                showMessage("El email no es válido.", false);
+                return;
+            }
+
+            if (registeredUsers.some(user => user.email === email)) {
+                showMessage("El email ya está registrado.", false);
+                return;
+            }
+
+            // Simulate successful registration
+            registeredUsers.push({ firstname, lastname, email, password });
+            console.log("Usuario registrado:", { firstname, lastname, email });
+            showMessage("¡Registro exitoso! Ahora puedes iniciar sesión.");
+            
+            // Clear form and switch to login
+            registrationForm.reset();
+            setTimeout(showLogin, 2000);
+        });
+
+        loginForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const email = event.target.elements['login-email'].value;
+            const password = event.target.elements['login-password'].value;
+
+            const user = registeredUsers.find(u => u.email === email && u.password === password);
+
+            if (user) {
+                showMessage(`¡Bienvenido, ${user.firstname}! Has iniciado sesión exitosamente.`);
+                loginForm.reset();
+            } else {
+                showMessage("Email o contraseña incorrectos.", false);
+            }
+        });
+    </script>
+</body>
+</html>
